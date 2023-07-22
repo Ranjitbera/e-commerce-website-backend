@@ -3,8 +3,8 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors'
-import { newAddedProduct } from '../db/products'
-// import { error } from 'console';
+import { getProduct, newAddedProduct } from '../db/products'
+
 
 dotenv.config();
 
@@ -29,6 +29,16 @@ app.post('/',async (req:Request,res:Response)=>{
    }
 
 })
+
+app.get('/',async (req:Request,res:Response)=>{
+    try{
+     const allproduct = await getProduct()
+     return res.status(201).send(allproduct).end();
+    }catch(e){
+     return res.status(400).send("error").end();
+    }
+ 
+ })
 
 const connect = ()=>{
     mongoose.connect(process.env.DATABASE
