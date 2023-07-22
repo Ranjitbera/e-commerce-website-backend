@@ -1,18 +1,34 @@
-import express from 'express';
-import https from 'https';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import compression from 'compression';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors'
+import { newAddedProduct } from '../db/products'
+// import { error } from 'console';
 
 dotenv.config();
 
+const PORT:Number = 8080;
+
+const app: express.Application = express();
+app.use(cors());
+
+app.use(bodyParser.json());
 
 
+app.post('/',async (req:Request,res:Response)=>{
+   const {price,category} = req.body;
+   try{
+    const newProduct = await newAddedProduct({
+        price,
+        category
+    })
+    return res.status(201).send("New Product added Successfully").end();
+   }catch(e){
+    return res.status(400).send("error").end();
+   }
 
-const app = express();
-app.use(compression);
-app.use(bodyParser);
+})
 
 const connect = ()=>{
     mongoose.connect(process.env.DATABASE
@@ -25,9 +41,9 @@ const connect = ()=>{
     }
 connect();
 
-const server = https.createServer(app);
 
 
-server.listen(8080,()=>{
-    console.log("server running on port 8080");
+
+app.listen(PORT,()=>{
+    console.log(`server running on port ${PORT}`);
 })
